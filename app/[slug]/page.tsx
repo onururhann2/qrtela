@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import type { MenuCategoryWithItems, Restaurant } from '@/types'
 import PublicMenuClient from './PublicMenuClient'
 
+export const dynamic = 'force-dynamic'
+
 const DEMO_RESTAURANT: Restaurant = {
   id: 'demo-restoran-id',
   owner_id: 'demo-owner',

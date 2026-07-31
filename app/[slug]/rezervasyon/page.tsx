@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import ReservasyonForm from './ReservasyonForm'
 
+export const dynamic = 'force-dynamic'
+
 const DEMO_RESTAURANT = {
   id: 'demo-restoran-id',
   name: 'Saray Lezzetleri (Demo)',
