@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
@@ -19,6 +19,32 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname()
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [restaurantSlug, setRestaurantSlug] = useState<string>('demo-restoran')
+
+  useEffect(() => {
+    async function loadRestaurantSlug() {
+      try {
+        const { isConfigured, createClient } = await import('@/lib/supabase/client')
+        if (isConfigured()) {
+          const supabase = createClient()
+          const { data: { user } } = await supabase.auth.getUser()
+          if (user) {
+            const { data: restaurant } = await supabase
+              .from('restaurants')
+              .select('slug')
+              .eq('owner_id', user.id)
+              .single()
+            if (restaurant?.slug) {
+              setRestaurantSlug(restaurant.slug)
+            }
+          }
+        }
+      } catch {
+        /* fallback to demo-restoran */
+      }
+    }
+    loadRestaurantSlug()
+  }, [])
 
   function isActive(item: typeof navItems[0]) {
     if (item.exact) return pathname === item.href
@@ -71,7 +97,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Bottom */}
         <div style={{ padding: '16px 12px', borderTop: '1px solid var(--border)' }}>
-          <Link href="/" target="_blank" className="sidebar-nav-item" style={{ marginBottom: 4 }}>
+          <Link
+            href={`/${restaurantSlug}`}
+            target="_blank"
+            className="sidebar-nav-item"
+            style={{ marginBottom: 4 }}
+          >
             <span style={{ fontSize: 18 }}>🌐</span>
             <span>Menüyü Görüntüle</span>
           </Link>
